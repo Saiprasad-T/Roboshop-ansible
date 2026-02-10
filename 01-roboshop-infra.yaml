@@ -16,7 +16,7 @@
     state: create
   tasks:
   - name: creating ec2 instances
-    ansible.aws.ec2_instance:
+    amazon.aws.ec2_instance:
       name: "{{ item }}-{{ env }}"      #mongodb-dev
       security_group: "{{ sg_id }}"
       image_id: "{{ ami_id }}"
