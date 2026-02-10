@@ -1,7 +1,6 @@
 - name: creating ec2 and r53 records
   hosts: all
   connection: local
-  become: yes
   vars_prompt: #takes input dynamically from users
   - name: instance_input
     prompt: please enter the instance name separated with commas
