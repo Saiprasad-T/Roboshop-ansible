@@ -26,9 +26,9 @@
         Project: roboshop
         Environment: "{{ env }}"
         Name: "{{ item }}-{{ env }}"
-      loop: "{{ instances }}"
-      when: state == create
-      register: ec2_output
+    loop: "{{ instances }}"
+    when: state == create
+    register: ec2_output
 
   - name: reading the ec2 output data
     ansible.builtin.debug:
