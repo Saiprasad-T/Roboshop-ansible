@@ -29,5 +29,5 @@
     register: aws_ec2_op
   
   - name: printing the output which was returned by aws
-    ansible.buitlin.debug:
+    ansible.builtin.debug:
       mgs: "{{ aws_ec2_op }}"
