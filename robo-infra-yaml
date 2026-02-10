@@ -32,4 +32,4 @@
   
   - name: printing the output which was returned by aws
     ansible.builtin.debug:
-      mgs: "{{ aws_ec2_op }}"
+      msg: "{{ aws_ec2_op }}"
