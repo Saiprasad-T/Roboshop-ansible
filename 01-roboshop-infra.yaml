@@ -13,7 +13,8 @@
      - frontend
      - redis
      - users
-    state: create
+    action: create
+
   tasks:
   - name: creating ec2 instances
     amazon.aws.ec2_instance:
@@ -27,7 +28,7 @@
         Environment: "{{ env }}"
         Name: "{{ item }}-{{ env }}"
     loop: "{{ instances }}"
-    when: state == create
+    when: action == create
     register: ec2_output
 
   - name: reading the ec2 output data
