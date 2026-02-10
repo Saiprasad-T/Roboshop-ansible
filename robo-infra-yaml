@@ -1,0 +1,33 @@
+- name: creating ec2 and r53 records
+  hosts: all
+  connection: local
+  vars_prompt: #takes input dynamically from users
+  - name: instance_input
+    prompt: please enter the instance name separated with commas
+    private: false
+  vars:
+    instances: "{{ instance_input.split(',') }}" #splits our input into commas like frontend,backend
+    sg_id: sg-0f34bb41316585429
+    ami_id: ami-0220d79f3f480ecf5
+    domain_name: devopswiththota.online
+    env: dev
+    action: create #using this for condition check,if action == create then only it will create
+  tasks:
+  - name: creating ec2 instances
+    amazon.aws.ec2_instance: #this is module for creating ec2 instances
+      instance_type: t3.micro
+      image_id: "{{ ami_id }}"
+      security_group: "{{ sg_id }}"
+      name: "{{ item }}-{{ env }}" #gives name as catalogue-dev
+      tags: #creating tags to identify
+        Project: roboshop
+        Component: "{{ item }}"
+        Environment: "{{ env }}"
+        Name: "{{ item }}-{{ env }}" #catalogue-dev
+    loop : "{{ instances }}"
+    when: action == "create"
+    register: aws_ec2_op
+  
+  - name: printing the output which was returned by aws
+    ansible.buitlin.debug:
+      mgs: "{{ aws_ec2_op }}"
