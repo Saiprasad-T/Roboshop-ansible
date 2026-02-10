@@ -26,7 +26,7 @@
         Project: roboshop
         Environment: "{{ env }}"
         Name: "{{ item }}-{{ env }}"
-      loop: {{ instances }}
+      loop: "{{ instances }}"
       when: state == create
       register: ec2_output
 
