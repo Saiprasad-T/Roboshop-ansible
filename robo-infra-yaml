@@ -11,7 +11,7 @@
     ami_id: ami-0220d79f3f480ecf5
     domain_name: devopswiththota.online
     env: dev
-    region: us-east-01
+    region: us-east-1
     action: create #using this for condition check,if action == create then only it will create
   tasks:
   - name: creating ec2 instances
