@@ -28,7 +28,7 @@
         Environment: "{{ env }}"
         Name: "{{ item }}-{{ env }}"
     loop: "{{ instances }}"
-    when: action == create
+    when: action == "create"
     register: ec2_output
 
   - name: reading the ec2 output data
