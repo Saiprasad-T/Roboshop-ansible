@@ -3,7 +3,7 @@
   connection: local
   vars_prompt: #takes input dynamically from users
   - name: instance_input
-    prompt: please enter the instance name separated with commas:
+    prompt: please enter the instance name separated with commas-
     private: false
   vars:
     final_instances: "{{ instance_input.split(',') }}" #splits our input into commas like frontend,backend
