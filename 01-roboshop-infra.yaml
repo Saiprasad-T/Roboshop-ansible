@@ -14,6 +14,7 @@
      - redis
      - users
     action: create
+    domain_name: devopswiththota.online
 
   tasks:
   - name: creating ec2 instances
@@ -33,5 +34,32 @@
 
   - name: reading the ec2 output data
     ansible.builtin.debug:
-      msg: "{{ ec2_output }}"      
+      msg: "{{ ec2_output }}"   
+
+  - name: creating r53 records
+    amazon.aws.route53:
+      state: present
+      zone: "{{ domain_name }}"
+      record: "{{ item.item}}-{{ env }}.{{ domain_name }}"
+      type: A
+      ttl: 1
+      value: "{{ item.instances[0].private_ip_address }}"
+      wait: true  
+      loop: "{{ ec2_output.results }}" 
+      when: action == "create"
+
+  - name: creating r53 records
+    amazon.aws.route53:
+      state: present
+      zone: "{{ domain_name }}"
+      record: "roboshop-{{ env }}.{{ domain_name }}" #roboshop-env.devopswiththota.online
+      type: A
+      ttl: 1
+      value: "{{ item.instances[0].public_ip_address }}"
+      wait: true  
+      loop: "{{ ec2_output.results }}" 
+      when:
+       -item.item == "frontend"
+       action == "create"
+
       

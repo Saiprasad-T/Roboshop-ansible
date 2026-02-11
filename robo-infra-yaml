@@ -3,10 +3,10 @@
   connection: local
   vars_prompt: #takes input dynamically from users
   - name: instance_input
-    prompt: please enter the instance name separated with commas
+    prompt: please enter the instance name separated with commas:
     private: false
   vars:
-    instances: "{{ instance_input.split(',') }}" #splits our input into commas like frontend,backend
+    final_instances: "{{ instance_input.split(',') }}" #splits our input into commas like frontend,backend
     sg_id: sg-0f34bb41316585429
     ami_id: ami-0220d79f3f480ecf5
     domain_name: devopswiththota.online
@@ -16,6 +16,7 @@
   tasks:
   - name: creating ec2 instances
     amazon.aws.ec2_instance: #this is module for creating ec2 instances
+      state: present
       instance_type: t3.micro
       region: "{{ region }}"
       image_id: "{{ ami_id }}"
@@ -26,10 +27,56 @@
         Component: "{{ item }}"
         Environment: "{{ env }}"
         Name: "{{ item }}-{{ env }}" #catalogue-dev
-    loop : "{{ instances }}"
+      wait: true
+    loop : "{{ final_instances }}"
     when: action == "create"
     register: aws_ec2_op
   
   - name: printing the output which was returned by aws
     ansible.builtin.debug:
       msg: "{{ aws_ec2_op }}"
+
+  - name: creating r53 records
+    amazon.aws.route53:
+      state: present
+      zone: "{{ domain_name }}"
+      record: "{{ item.item }}-{{ env }}.{{ domain_name }}"
+      type: A
+      ttl: 1
+      value: "{{ item.instances[0].private_ip_address }}"
+      wait: true
+    loop: "{{ aws_ec2_op.results }}"
+
+  - name: creating r53 records
+    amazon.aws.route53:
+      state: present
+      zone: "{{ domain_name }}"
+      record: "roboshop-{{ env }}.{{ domain_name }}" #roboshop-dev.devopswiththota.online
+      type: A
+      ttl: 1
+      value: "{{ item.instances[0].public_ip_address }}"
+      wait: true
+    loop: "{{ aws_ec2_op.results }}"
+    when: 
+    - item.item == "frontend"
+    - action == "create"
+
+  - name: deleting ec2 instances
+    amazon.aws.ec2_instance: #this is module for creating ec2 instances
+      name: "{{ item }}-{{ env }}"
+      state: absent
+      wait: false
+    loop : "{{ final_instances }}"
+    when: action == "destroy"
+
+  - name: deleting r53 records
+    amazon.aws.route53:
+      state: absent
+      zone: "{{ domain_name }}"
+      record: "{{ item.item }}-{{ env }}.{{ domain_name }}"
+      type: A
+      ttl: 1
+      wait: false
+    loop: "{{ aws_ec2_op.results }}"
+    when: action == "destroy"
+  
