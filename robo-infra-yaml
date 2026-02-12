@@ -1,5 +1,5 @@
 - name: creating ec2 and r53 records
-  hosts: all
+  hosts: local
   connection: local
   vars_prompt: #takes input dynamically from users
   - name: instance_input
@@ -45,6 +45,7 @@
       ttl: 1
       value: "{{ item.instances[0].private_ip_address }}"
       wait: true
+      overwrite: true
     loop: "{{ aws_ec2_op.results }}"
 
   - name: creating r53 records
@@ -56,6 +57,7 @@
       ttl: 1
       value: "{{ item.instances[0].public_ip_address }}"
       wait: true
+      overwrite: true
     loop: "{{ aws_ec2_op.results }}"
     when: 
     - item.item == "frontend"
