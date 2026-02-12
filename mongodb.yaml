@@ -1,6 +1,6 @@
 - name: creating mongodb through ansible
   hosts: mongodb  #define this in the ini file
-  become: 
+  become: yes
   tasks:
   - name: Copy file with owner and permissions
     ansible.builtin.copy:
