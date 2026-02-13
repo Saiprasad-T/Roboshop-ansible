@@ -1,5 +1,5 @@
 - name: creating ec2 and r53 records
-  hosts: local
+  hosts: all
   connection: local
   vars_prompt: #takes input dynamically from users
   - name: instance_input

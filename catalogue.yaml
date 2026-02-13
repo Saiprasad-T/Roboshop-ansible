@@ -50,6 +50,6 @@
       state: present
   - name: loading the data to mongodb
     ansible.builtin.command: mongosh --host MONGODB-SERVER-IPADDRESS </app/db/master-data.js
-    
+
   
     
