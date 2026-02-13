@@ -9,7 +9,7 @@
 
   - name: installing mongodb
     ansible.builtin.dnf:
-      name: mongodb-org
+      name: mongodb-org -y
       state: present
 
   - name: starting mongodb service
