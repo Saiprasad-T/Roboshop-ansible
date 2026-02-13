@@ -29,7 +29,6 @@
   - name: print the message for temporary
     ansible.builtin.debug:
       msg: "{{ app_check }}"
-    when: app_check.stdout | int > 0
   - name: deleting catalogue.zip file #deleting zip file
     ansible.builtin.file:
       path: /tmp/catalogue.zip
