@@ -23,48 +23,54 @@
     ansible.builtin.file:
       path: /app
       state: directory
-  - name: deleting catalogue.zip file #deleting zip file
-    ansible.builtin.file:
-      path: /tmp/catalogue.zip
-      state: absent
-  - name: Downloading zip file #downloading zip file
-    ansible.builtin.get_url:
-      url: https://roboshop-artifacts.s3.amazonaws.com/catalogue-v3.zip 
-      dest: /tmp/catalogue.zip
-  - name: Unarchive the catalogue.zip file
-    ansible.builtin.unarchive: #unzipping the file to/app
-      src: /tmp/catalogue.zip
-      dest: /app
-      remote_src: yes
-  - name: Installing nodejs dependencies npm #installing dependencies
-    community.general.npm:
-      name: npm
-      path: /app
-  - name: Template a file to /etc/file.conf #updating conf file
-    ansible.builtin.template:
-      src: catalogue.service
-      dest: /etc/systemd/system/catalogue.service
-  - name: daemon_reload
-    ansible.builtin.systemd_service:
-     daemon_reload: true
-  - name: Copying mongo.repo file
-    ansible.builtin.copy:
-     src: mongo.repo
-     dest: /etc/yum.repos.d/mongo.repo
-  - name: installing mongodb-mongosh
-    ansible.builtin.dnf:
-      name: mongodb-mongosh
-      state: present
-  - name: check products loaded or not 
-    ansible.builtin.command: mongosh --host "{{ mongodb_host }}" --quiet  --eval 'db.getMongo().getDBNames().indexOf("catalogue")'
-    register: catalogue_output
-  - name: print the output
+  - name: Verify /app exists
+    ansible.builtin.command: ls -ld /app
+    register: app_check
+  - name: print the message for temporary
     ansible.builtin.debug:
-      msg: "{{ catalogue_output }}"
-  # - name: loading the data to mongodb
-  #   ansible.builtin.command: mongosh --host "{{ mongodb_host }}" </app/db/master-data.js
-  #   when: catalogue_output.stdout | int < 0
-  # - name: restarted catalogue
-  #   ansible.builtin.service:
-  #     name: started
-  #     enabled: yes
+      msg: "{{ app_check }}"
+  # - name: deleting catalogue.zip file #deleting zip file
+  #   ansible.builtin.file:
+  #     path: /tmp/catalogue.zip
+  #     state: absent
+  # - name: Downloading zip file #downloading zip file
+  #   ansible.builtin.get_url:
+  #     url: https://roboshop-artifacts.s3.amazonaws.com/catalogue-v3.zip 
+  #     dest: /tmp/catalogue.zip
+  # - name: Unarchive the catalogue.zip file
+  #   ansible.builtin.unarchive: #unzipping the file to/app
+  #     src: /tmp/catalogue.zip
+  #     dest: /app
+  #     remote_src: yes
+  # - name: Installing nodejs dependencies npm #installing dependencies
+  #   community.general.npm:
+  #     name: npm
+  #     path: /app
+  # - name: Template a file to /etc/file.conf #updating conf file
+  #   ansible.builtin.template:
+  #     src: catalogue.service
+  #     dest: /etc/systemd/system/catalogue.service
+  # - name: daemon_reload
+  #   ansible.builtin.systemd_service:
+  #    daemon_reload: true
+  # - name: Copying mongo.repo file
+  #   ansible.builtin.copy:
+  #    src: mongo.repo
+  #    dest: /etc/yum.repos.d/mongo.repo
+  # - name: installing mongodb-mongosh
+  #   ansible.builtin.dnf:
+  #     name: mongodb-mongosh
+  #     state: present
+  # - name: check products loaded or not 
+  #   ansible.builtin.command: mongosh --host "{{ mongodb_host }}" --quiet  --eval 'db.getMongo().getDBNames().indexOf("catalogue")'
+  #   register: catalogue_output
+  # - name: print the output
+  #   ansible.builtin.debug:
+  #     msg: "{{ catalogue_output }}"
+  # # - name: loading the data to mongodb
+  # #   ansible.builtin.command: mongosh --host "{{ mongodb_host }}" </app/db/master-data.js
+  # #   when: catalogue_output.stdout | int < 0
+  # # - name: restarted catalogue
+  # #   ansible.builtin.service:
+  # #     name: started
+  # #     enabled: yes
