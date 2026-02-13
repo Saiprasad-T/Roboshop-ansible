@@ -8,7 +8,6 @@
     ansible.builtin.dnf:
       state: present
       name: nodejs
-      wait: true
   - name: creating system-user
     ansible.builtin.user:
       name: roboshop
