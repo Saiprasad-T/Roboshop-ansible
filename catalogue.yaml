@@ -49,13 +49,13 @@
       name: mongodb-mongosh
       state: present
   - name: check products loaded or not 
-    ansible.builtin.command: mongosh --host "{{ mongodb }}" --quiet  --eval 'db.getMongo().getDBNames().indexOf("catalogue")'
+    ansible.builtin.command: mongosh --host "{{ mongodb_host }}" --quiet  --eval 'db.getMongo().getDBNames().indexOf("catalogue")'
     register: catalogue_output
   - name: print the output
     ansible.builtin.debug:
       msg: "{{ catalogue_output }}"
   # - name: loading the data to mongodb
-  #   ansible.builtin.command: mongosh --host MONGODB-SERVER-IPADDRESS </app/db/master-data.js
+  #   ansible.builtin.command: mongosh --host "{{ mongodb_host }}" </app/db/master-data.js
   #   when: catalogue_output.stdout | int < 0
   # - name: restarted catalogue
   #   ansible.builtin.service:
