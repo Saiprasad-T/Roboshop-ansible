@@ -5,8 +5,9 @@
   - name: enabling the nodejs 20
     ansible.builtin.command: dnf module enable nodejs:20 -y
   - name: installing nodejs
-    name: nodejs
-    state: present
+    ansible.builtin.dnf:
+      name: nodejs
+      state: present
   - name: creating system user
     ansible.builtin.user:
       name: roboshop
