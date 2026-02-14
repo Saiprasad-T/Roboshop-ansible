@@ -1,0 +1,58 @@
+- name: configuring payment service on ec2 instance
+  hosts: payment
+  become: true
+  tasks:
+  - name: installing python
+    ansible.builtin.dnf:
+     name: python3 gcc python3-devel
+     state: present
+  - name: adding system user
+    ansible.builtin.user:
+      name: roboshop
+      shell: /sbin/nologin
+      home: /app
+      system: yes
+      comment: "roboshop system user"
+  - name: deleting the /app directory #deleting /app
+    ansible.builtin.file:
+      path: /app
+      state: absent
+  - name: Creating a directory /app #creating /app
+    ansible.builtin.file:
+      path: /app
+      state: directory
+  - name: Verify /app exists
+    ansible.builtin.command: ls -ld /app
+    register: app_check
+  - name: print the message for temporary
+    ansible.builtin.debug:
+      msg: "{{ app_check }}"
+  - name: deleting payment.zip file #deleting zip file
+    ansible.builtin.file:
+      path: /tmp/payment.zip
+      state: absent
+  - name: Downloading zip file #downloading zip file
+    ansible.builtin.get_url:
+      url: https://roboshop-artifacts.s3.amazonaws.com/payment-v3.zip
+      dest: /tmp/payment.zip
+  - name: Unarchive the payment.zip file
+    ansible.builtin.unarchive: #unzipping the file to/app
+      src: /tmp/payment.zip
+      dest: /app
+      remote_src: yes
+  - name: Install python dependencies via pip
+    ansible.builtin.command:
+      cmd: pip3 install -r requirements.txt
+      chdir: /app
+  - name: configuring payment.service
+    ansible.builtin.template:
+      src: payment.service
+      dest: /etc/systemd/system/payment.service
+  - name: daemon_reload
+    ansible.builtin.systemd_service:
+      daemon_reload: true
+  - name: starting and enabling
+    ansible.builtin.service:
+      name: payment
+      state: started
+      enabled: yes
