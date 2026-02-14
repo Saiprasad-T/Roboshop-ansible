@@ -34,7 +34,7 @@
       path: /tmp/cart.zip
       state: absent
   - name: downloading from s3
-    ansible.builtin.get.url:
+    ansible.builtin.get_url:
       url: https://roboshop-artifacts.s3.amazonaws.com/cart-v3.zip
       path: /tmp/cart.zip
   - name: unzipping the file from /tmp to /app
